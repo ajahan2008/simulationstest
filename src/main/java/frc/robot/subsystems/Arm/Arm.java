@@ -2,8 +2,11 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.Arm;
 
+import static edu.wpi.first.units.Units.Volts;
+
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -14,6 +17,7 @@ import com.google.flatbuffers.Constants;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
@@ -23,12 +27,14 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.RobotContainer;
-import frc.robot.Constants.ArmConstants;
 import frc.robot.commands.Arm.ArmHome;
+import frc.robot.subsystems.Arm.ArmConstants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Arm extends SubsystemBase {
@@ -48,7 +54,6 @@ public class Arm extends SubsystemBase {
   private final CANcoder encoder = new CANcoder(ArmConstants.kEncoderPort);
 
   // control
-  // TODO: Add feedforward control system(?)
   private final PIDController pidController = new PIDController(kP, kI, kD);
 
   // simulated devices
@@ -142,6 +147,10 @@ public class Arm extends SubsystemBase {
 
   public void stop() {
     motor.set(0);
+  }
+
+  public void runVoltage(double V) {
+    motor.setVoltage(V);
   }
 
   @Override

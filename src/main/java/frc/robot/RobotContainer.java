@@ -6,14 +6,18 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.*;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.StopAll;
 import frc.robot.commands.Arm.ArmDown;
@@ -22,8 +26,8 @@ import frc.robot.commands.Arm.ArmHome;
 import frc.robot.commands.Arm.ArmPivotToSetpoint;
 import frc.robot.commands.Arm.ArmUp;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Arm.Arm;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -44,6 +48,21 @@ public class RobotContainer {
     private final Arm arm = new Arm();
 
     public RobotContainer() {
+        var sysIdRoutine = new SysIdRoutine(
+            new SysIdRoutine.Config(
+            null, null, null, 
+            (state) -> Logger.recordOutput("ArmSysIDTestState", state.toString())
+        ), 
+        new SysIdRoutine.Mechanism(
+            (voltage) -> arm.runVoltage(voltage.in(Volts)), 
+            null, 
+            (Subsystem) arm)
+        );
+
+        sysIdRoutine.quasistatic(SysIdRoutine.Direction.kForward);
+        sysIdRoutine.quasistatic(SysIdRoutine.Direction.kReverse);
+        sysIdRoutine.dynamic(SysIdRoutine.Direction.kForward);
+        sysIdRoutine.dynamic(SysIdRoutine.Direction.kReverse);
         configureBindings();
     }
 
