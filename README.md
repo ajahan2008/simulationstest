@@ -4,6 +4,7 @@ This project was made using [WPILib's arm simulation example](https://github.com
 # Features
 - Working simulation of an arm
    - You can plot your setpoints, speeds, and gains of an arm, alongside the drops
+      - PID values are tunable, being preference keys in the network tables
    - You can simulate it with a visualizer (two arms, one representing the stand and one the actual arm/joint), AScope makes it smooth
 - XBoxController binded buttons
    - Raising it up
@@ -21,7 +22,6 @@ This project was made using [WPILib's arm simulation example](https://github.com
    - FeedForward algorithm keeps it in place
    - Doesn't let it slack like brake mode does when it cant support the arm
 # Future goals
-- Make everything tunable
 - Utilize constraints from our algae intake from last year
 
 # Image gallery
