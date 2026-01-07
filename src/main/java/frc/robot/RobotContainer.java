@@ -17,9 +17,12 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.commands.ArmDrop;
-import frc.robot.commands.ArmHome;
-import frc.robot.commands.ArmPivot;
+import frc.robot.commands.StopAll;
+import frc.robot.commands.Arm.ArmDown;
+import frc.robot.commands.Arm.ArmEase;
+import frc.robot.commands.Arm.ArmHome;
+import frc.robot.commands.Arm.ArmPivotToSetpoint;
+import frc.robot.commands.Arm.ArmUp;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -82,10 +85,15 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        joystick.x().whileTrue(new ArmPivot(arm));
-        joystick.a().onTrue(new ArmPivot(arm));
-        joystick.b().onTrue(new ArmDrop(arm));
+        joystick.a().onTrue(new ArmPivotToSetpoint(arm));
         joystick.y().onTrue(new ArmHome(arm));
+        joystick.x().onTrue(new ArmEase(arm));
+        joystick.rightBumper().onTrue(new StopAll(arm));
+
+        joystick.povUp().whileTrue(new ArmUp(arm));
+        joystick.povDown().whileTrue(new ArmDown(arm));
+
+
     }
 
     public Command getAutonomousCommand() {
