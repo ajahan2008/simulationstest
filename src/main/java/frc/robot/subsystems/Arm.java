@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.ArmConstants;
+import frc.robot.commands.Arm.ArmHome;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Arm extends SubsystemBase {
@@ -36,7 +37,9 @@ public class Arm extends SubsystemBase {
   private LoggedNetworkNumber tunablekP = new LoggedNetworkNumber("/Tuning/Arm/TunablekP", ArmConstants.kDefaultkP);
   
   // values
-  private double kP = tunablekP.get();
+  private double kP = ArmConstants.kDefaultkP;
+  private double kI = ArmConstants.kDefaultkI;
+  private double kD = ArmConstants.kDefaultkD;
   private double setpointDegrees = ArmConstants.kDefaultSetpointDegrees;
 
   // devices
@@ -46,7 +49,7 @@ public class Arm extends SubsystemBase {
 
   // control
   // TODO: Add feedforward control system(?)
-  private final PIDController pidController = new PIDController(kP, 0, 0);
+  private final PIDController pidController = new PIDController(kP, kI, kD);
 
   // simulated devices
 
@@ -87,9 +90,13 @@ public class Arm extends SubsystemBase {
 
     Preferences.initDouble(ArmConstants.kPositionKey, setpointDegrees);
     Preferences.initDouble(ArmConstants.kPKey, kP);
+    Preferences.initDouble(ArmConstants.kIKey, kI);
+    Preferences.initDouble(ArmConstants.kDKey, kD);
+    
   }
 
   public void simulationPeriodic() {
+    loadPreferences();
     armSim.setInput(motor.get() * RobotController.getBatteryVoltage());
     armSim.update(.020);
     encoderSim.setRawPosition(armSim.getAngleRads());
@@ -107,8 +114,22 @@ public class Arm extends SubsystemBase {
   public void loadPreferences() {
     setpointDegrees = Preferences.getDouble(ArmConstants.kPositionKey, setpointDegrees);
     if (kP != Preferences.getDouble(ArmConstants.kPKey, kP)) {
+      System.out.println("Old kP: " + kP);
       kP = Preferences.getDouble(ArmConstants.kPKey, kP);
       pidController.setP(kP);
+      System.out.println("New kP: " + kP);
+    }
+    if (kI != Preferences.getDouble(ArmConstants.kIKey, kI)) {
+      System.out.println("Old kI: " + kI);
+      kI = Preferences.getDouble(ArmConstants.kIKey, kI);
+      pidController.setI(kI);
+      System.out.println("Old kI: " + kI);
+    }
+    if (kD != Preferences.getDouble(ArmConstants.kDKey, kD)) {
+      System.out.println("Old kD: " + kD);
+      kD = Preferences.getDouble(ArmConstants.kDKey, kD);
+      pidController.setD(kD);
+      System.out.println("Old kD: " + kD);
     }
   }
 

@@ -11,9 +11,13 @@ public class Constants {
         // keys
         public static final String kPositionKey = "ArmPosition";
         public static final String kPKey = "ArmP";
+        public static final String kIKey = "ArmI";
+        public static final String kDKey = "ArmD";
 
         // pid
         public static final double kDefaultkP = 50;
+        public static final double kDefaultkI = 0;
+        public static final double kDefaultkD = 0;
         public static final double kDefaultSetpointDegrees = 75.0;
         public static final double kDefaultHomeDegrees = -75;
 

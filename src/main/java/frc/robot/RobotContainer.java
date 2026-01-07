@@ -85,14 +85,13 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        joystick.a().onTrue(new ArmPivotToSetpoint(arm));
-        joystick.y().onTrue(new ArmHome(arm));
+        joystick.y().onTrue(new ArmPivotToSetpoint(arm));
+        joystick.a().onTrue(new ArmHome(arm));
         joystick.x().onTrue(new ArmEase(arm));
         joystick.rightBumper().onTrue(new StopAll(arm));
 
-        joystick.povUp().whileTrue(new ArmUp(arm));
-        joystick.povDown().whileTrue(new ArmDown(arm));
-
+        joystick.povLeft().whileTrue(new ArmUp(arm));
+        joystick.povRight().whileTrue(new ArmDown(arm));
 
     }
 
