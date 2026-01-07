@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.ArmConstants;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Arm extends SubsystemBase {
 
@@ -97,6 +98,12 @@ public class Arm extends SubsystemBase {
     arm.setAngle(Units.radiansToDegrees(armSim.getAngleRads()));
   }
 
+  public void dataLogging() {
+    SmartDashboard.putNumber("Arm Position", encoder.getPosition().getValueAsDouble());
+    SmartDashboard.putNumber("Arm Output A", armSim.getCurrentDrawAmps());
+    SmartDashboard.putNumber("Arm Motor Output V", motor.getMotorVoltage().getValueAsDouble());
+  }
+
   public void loadPreferences() {
     setpointDegrees = Preferences.getDouble(ArmConstants.kPositionKey, setpointDegrees);
     if (kP != Preferences.getDouble(ArmConstants.kPKey, kP)) {
@@ -105,10 +112,10 @@ public class Arm extends SubsystemBase {
     }
   }
 
-  public void reachSetpoint() {
+  public void reachSetpoint(double setpoint) {
     var pidOutput = 
       pidController.calculate(
-        encoder.getPosition().getValueAsDouble(), Units.degreesToRadians(setpointDegrees));
+        encoder.getPosition().getValueAsDouble(), Units.degreesToRadians(setpoint));
     motor.setVoltage(pidOutput);
   }
 
@@ -118,6 +125,7 @@ public class Arm extends SubsystemBase {
 
   @Override
   public void periodic() {
+    dataLogging();
     // This method will be called once per scheduler run
   }
 }

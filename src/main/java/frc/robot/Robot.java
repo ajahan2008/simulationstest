@@ -60,11 +60,11 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    if (m_robotContainer.joystick.getTrigger()) {
-      arm.reachSetpoint();
-    } else {
-      arm.stop();
-    }
+    // if (m_robotContainer.joystick.getTrigger()) {
+    //   arm.reachSetpoint();
+    // } else {
+    //   arm.stop();
+    // }
   }
 
   @Override

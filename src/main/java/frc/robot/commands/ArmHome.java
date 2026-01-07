@@ -9,12 +9,12 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.subsystems.Arm;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class ArmPivot extends Command {
+public class ArmHome extends Command {
 
   private Arm arm;
 
-  /** Creates a new ArmPivot. */
-  public ArmPivot(Arm arm) {
+  /** Creates a new ArmHome. */
+  public ArmHome(Arm arm) {
     this.arm = arm;
 
     addRequirements(arm);
@@ -28,7 +28,7 @@ public class ArmPivot extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    arm.reachSetpoint(ArmConstants.kDefaultSetpointDegrees);
+    arm.reachSetpoint(ArmConstants.kDefaultHomeDegrees);
   }
 
   // Called once the command ends or is interrupted.

@@ -15,6 +15,7 @@ public class Constants {
         // pid
         public static final double kDefaultkP = 50;
         public static final double kDefaultSetpointDegrees = 75.0;
+        public static final double kDefaultHomeDegrees = -75;
 
         // dpp
         public static final double kEncoderDistPerPulse = 2.0 * Math.PI / 4096;
