@@ -2,10 +2,12 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.Elevator;
 
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+import edu.wpi.first.wpilibj.Preferences;
 
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
@@ -26,33 +28,33 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.ElevatorConstants;
+import frc.robot.subsystems.Elevator.ElevatorConstants;
 
 public class Elevator extends SubsystemBase {
 
-  private LoggedNetworkNumber tunablekP = new LoggedNetworkNumber("/Tuning/Elevator/tunablekP", ElevatorConstants.kP);
-  private LoggedNetworkNumber tunablekI = new LoggedNetworkNumber("/Tuning/Elevator/tunablekI", ElevatorConstants.kI);
-  private LoggedNetworkNumber tunablekD = new LoggedNetworkNumber("/Tuning/Elevator/tunablekD", ElevatorConstants.kD);
-  private LoggedNetworkNumber tunablekS = new LoggedNetworkNumber("/Tuning/Elevator/tunablekS", ElevatorConstants.kS);
-  private LoggedNetworkNumber tunablekG = new LoggedNetworkNumber("/Tuning/Elevator/tunablekG", ElevatorConstants.kG);
-  private LoggedNetworkNumber tunablekV = new LoggedNetworkNumber("/Tuning/Elevator/tunablekV", ElevatorConstants.kV);
-  private LoggedNetworkNumber tunablekA = new LoggedNetworkNumber("/Tuning/Elevator/tunablekA", ElevatorConstants.kA);
+  private double tunablekP = ElevatorConstants.kP;
+  private double tunablekI = ElevatorConstants.kI;
+  private double tunablekD = ElevatorConstants.kD;
+  private double tunablekS = ElevatorConstants.kS;
+  private double tunablekG = ElevatorConstants.kG;
+  private double tunablekV = ElevatorConstants.kV;
+  private double tunablekA = ElevatorConstants.kA;
 
   private final DCMotor gearBox = DCMotor.getKrakenX60(1);
-  private final Encoder encoder = new Encoder(ElevatorConstants.kEncoderAChannel, ElevatorConstants.kEncoderBChannel);
+  private final CANcoder encoder = new CANcoder(ElevatorConstants.encoderPort);
   private final TalonFX motor = new TalonFX(17);
   private final ProfiledPIDController pidController =
     new ProfiledPIDController(
-      tunablekP.get(), 
-      tunablekI.get(), 
-      tunablekD.get(), 
+      tunablekP, 
+      tunablekI, 
+      tunablekD, 
       new TrapezoidProfile.Constraints(2.45, 2.45));
   ElevatorFeedforward feedForward = 
     new ElevatorFeedforward(
-      tunablekS.get(), 
-      tunablekG.get(), 
-      tunablekV.get(), 
-      tunablekA.get());
+      tunablekS, 
+      tunablekG, 
+      tunablekV, 
+      tunablekA);
   private final ElevatorSim m_elevatorSim =
       new ElevatorSim(
           gearBox,
@@ -80,15 +82,8 @@ public class Elevator extends SubsystemBase {
     motor.stopMotor();
   }
 
-  public void updateData() {
-    pidController.setP(tunablekP.get());
-    pidController.setI(tunablekI.get());
-    pidController.setD(tunablekD.get());
-    SmartDashboard.putNumber("Elevator Position", m_elevatorSim.getPositionMeters());
-    SmartDashboard.putNumber("Elevator PID Error", pidController.getPositionError());
-    pidController.setP(tunablekP.get());
-    pidController.setI(tunablekI.get());
-    pidController.setD(tunablekD.get());
+  public void loadPreferences() {
+
   }
 
   private final Mechanism2d mechanism2d = new Mechanism2d(20, 50);
@@ -99,31 +94,35 @@ public class Elevator extends SubsystemBase {
   public Elevator() {
     encoder.setDistancePerPulse(ElevatorConstants.kEncoderDistPerPulse);
     SmartDashboard.putData("Elevator Sim", mechanism2d);
-    updateData();
+    loadPreferences();
+
+    Preferences.initDouble(ElevatorConstants.kPkey, tunablekP);
+    Preferences.initDouble(ElevatorConstants.kIkey, tunablekI);
+    Preferences.initDouble(ElevatorConstants.kDkey, tunablekD);
+    Preferences.initDouble(ElevatorConstants.kSkey, tunablekS);
+    Preferences.initDouble(ElevatorConstants.kGkey, tunablekG);
+    Preferences.initDouble(ElevatorConstants.kVkey, tunablekV);
+    Preferences.initDouble(ElevatorConstants.kAkey, tunablekA);
+    
   }
 
   @Override
   public void periodic() {
-    tunablekP.periodic();
-    updateData();
+    dataLogging();
     // This method will be called once per scheduler runP
   }
 
   public void updateTelemetry() {
-    updateData();
+    loadPreferences();
     elevatorMechanism2d.setLength(encoder.getDistance());
   }
 
-  public double getP() {
-    return pidController.getP();
-  }
-
-  public double getTunableP() {
-    return tunablekP.get();
+  public void dataLogging() {
+    SmartDashboard.putNumber("Elevator Position", encoder.getDistance());
   }
 
   public void simulationPeriodic() {
-    updateData();
+    loadPreferences();
     // set inputs
     m_elevatorSim.setInput(motorSim.getMotorVoltage());
 
