@@ -26,9 +26,9 @@ public class ElevatorConstants {
     public static final double kDrumRadius = Units.inchesToMeters(2.0);
     public static final double kCarriageMass = 4.0; // kg
 
-    public static final double kSetpointMeters = 9;
+    public static final double kSetpointMeters = .75;
     public static final double kMinHeightMeters = 0.0;
-    public static final double kMaxHeightMeters = 10;
+    public static final double kMaxHeightMeters = 1.25;
 
     // distance per pulse = (distance per revolution) / (pulses per revolution)
     // = (Pi * D) / ppr
